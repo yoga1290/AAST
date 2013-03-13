@@ -1,0 +1,74 @@
+<html>
+<head>
+<title>Youssef Gamil</title>
+</head>
+
+<body>
+<canvas id="canvas" >Original image Here</canvas>
+<canvas id="outputCanvas" >Output</canvas>
+
+<script type="text/javascript">
+
+
+var img = new Image();
+
+
+img.onload = function(ev){
+
+	var canvas = document.getElementById("canvas");
+	var c = canvas.getContext("2d");
+
+//    im = ev.target; // the image, assumed to be 200x200
+
+    // read the width and height of the canvas
+    canvas.width=img.width;
+    canvas.height=img.height;
+
+    // stamp the image on the left of the canvas:
+    c.drawImage(img, 0, 0);
+
+	console.log("drawing image..");
+    // get all canvas pixel data
+    var imageData = c.getImageData(0, 0, canvas.width, canvas.height);
+	console.log(imageData);
+	var filter3x3=[[1/9,1/9,1/9],[1/9,1/9,1/9],[1/9,1/9,1/9]];
+	var filter5x5=[[1/25,1/25,1/25,1/25,1/25],[1/25,1/25,1/25,1/25,1/25],[1/25,1/25,1/25,1/25,1/25],[1/25,1/25,1/25,1/25,1/25],[1/25,1/25,1/25,1/25,1/25]];
+
+//	imageData.data[3*(r*img.width+c)]
+	for(r=0;r<img.width;r++)
+		for(c=0;c<img.height;c++)
+		{
+			var avg=0;
+			for(dr=-1;dr<=1;dr++)
+				for(dc=-1;dc<=1;dc++)
+					for(i=0;i<3;i++) //Sum all RGBA (Red,Green,Blue,Alpha)
+						if((3*( (r+dr)*img.width+(c+dc) ))+i<imageData.data.length && (3*( (r+dr)*im.width+(c+dc) ))+i>=0)
+						avg+=filter3x3[dr+1][dc+1] * imageData.data[(3*( (r+dr)*im.width+(c+dc) ))+i];
+
+			//Red layer
+			imageData.data[3*(r*img.width+c)]=avg;
+			//Green layer
+			imageData.data[3*(r*img.width+c)+1]=avg;
+			//Blue layer
+			imageData.data[3*(r*img.width+c)+2]=avg;
+			//Alpha layer
+			imageData.data[3*(r*img.width+c)+3]=avg;
+		}
+	//Output it to the "outputCanvas"
+	var out=document.getElementById("outputCanvas");
+	out.width=img.width;
+	out.height=img.height;
+	out.getContext("2d").putImageData(imageData, 0, 0);
+    // put pixel data on canvas
+//    c.putImageData(imageData, 0, 0);
+
+};
+
+
+
+img.src = "IMG_1228.JPG";// must be in same domain,otherwise a Cross-orgin" exception!
+
+</script>
+
+</body>
+</html>
