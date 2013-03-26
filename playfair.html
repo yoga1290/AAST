@@ -1,0 +1,95 @@
+<html>
+<head>
+<title>Security Assignment#1 </title>
+</head>
+<body>
+<script>
+
+function getKey(key)
+{
+	key=key.toUpperCase();
+	var vis=[];
+	var i,res="";
+	var table=[];
+	var extra="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	for(i=0;i<key.length && i<25;i++)
+	{
+		if(vis[key.charAt(i)]==true) continue;
+		vis[key.charAt(i)]=true;
+
+		res+=key.charAt(i)+"";
+	}
+
+	if(vis['I']==true)
+		vis['J']=true;
+
+	for(i=0;res.length<25;i++)
+	{
+		if(vis[extra.charAt(i)]==true) continue;
+		res+=extra.charAt(i)+"";
+	}
+	for(i=0;i<25;i+=5)
+	{
+		table.push([res.charAt(i),res.charAt(i+1),res.charAt(i+2),res.charAt(i+3),res.charAt(i+4)]);
+	}
+	return res;
+}
+function intDiv(a,b)
+{
+	return ((a/b)-((a%b)/b));
+}
+function getRC(pos)
+{
+	return [intDiv(pos,5), pos%5];
+}
+function getOriginal(msg,key)
+{
+	msg=msg.toUpperCase();
+	var k=getKey(key);
+
+	var res="";
+	var pos1,r1,c1,pos2,r2,c2;
+	for(i=1;i<msg.length;i+=2)
+	{
+		pos1=k.indexOf(""+msg.charAt(i-1));
+		if(pos1>-1)
+		{
+			r1=Math.floor(pos1/5);
+			c1=pos1%5;
+		}
+		pos2=k.indexOf(""+msg.charAt(i));
+		if(pos2>-1)
+		{
+			r2=Math.floor(pos2/5);;
+			c2=pos2%5;
+		}
+		
+//		alert("("+r1+","+c1+") \n ("+r2+","+c2+")");
+
+		if(r1==r2)
+		{
+			res+=k.charAt(	r1*5+((c1+1)%5)	);
+			res+=k.charAt(	r2*5+((c2+1)%5)	);
+		}
+		else if(c1==c2)
+		{
+			res+=k.charAt(	((r1+1)%5)*5+c1	);
+			res+=k.charAt(	((r2+1)%5)*5+c2	);
+		}
+		else
+		{
+			res+=k.charAt(	r1*5+c2	);
+			res+=k.charAt(	r2*5+c1	);
+		}
+	}
+	return res;
+}
+//wikipedia example:
+alert(getOriginal("HIDETHEGOLDINTHETREXESTUMP","PLAYFAIREXAMPLE"));
+
+//get your own:
+alert(getOriginal(prompt("Message:"),prompt("key:")));
+
+</script>
+</body>
+</html>
